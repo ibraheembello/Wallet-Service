@@ -29,6 +29,9 @@ import { ApiKey } from './entities/api-key.entity';
         entities: [User, Wallet, Transaction, ApiKey],
         synchronize: configService.get('DB_SYNCHRONIZE') === 'true',
         logging: configService.get('DB_LOGGING') === 'true',
+        ssl: configService.get('DB_SSL') === 'true' ? {
+          rejectUnauthorized: false
+        } : false,
       }),
     }),
     AuthModule,

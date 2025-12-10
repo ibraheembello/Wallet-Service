@@ -57,4 +57,8 @@ describe('ApiKeysService', () => {
   it('should have rolloverApiKey method', () => {
     expect(service.rolloverApiKey).toBeDefined();
   });
+
+  it('should have revokeApiKey method', () => {
+    expect(service.revokeApiKey).toBeDefined();
+  });
 });

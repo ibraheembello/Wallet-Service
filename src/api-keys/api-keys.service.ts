@@ -10,6 +10,7 @@ import { ApiKey } from '../entities/api-key.entity';
 import { User } from '../entities/user.entity';
 import { CreateApiKeyDto, ExpiryFormat } from './dto/create-api-key.dto';
 import { RolloverApiKeyDto } from './dto/rollover-api-key.dto';
+import { RevokeApiKeyDto } from './dto/revoke-api-key.dto';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
@@ -121,6 +122,30 @@ export class ApiKeysService {
     return {
       api_key: plainKey,
       expires_at: expiresAt.toISOString(),
+    };
+  }
+
+  async revokeApiKey(userId: string, revokeDto: RevokeApiKeyDto) {
+    // Find the API key
+    const apiKey = await this.apiKeyRepository.findOne({
+      where: { id: revokeDto.api_key_id, userId },
+    });
+
+    if (!apiKey) {
+      throw new NotFoundException('API key not found');
+    }
+
+    // Check if already revoked
+    if (apiKey.isRevoked) {
+      throw new BadRequestException('API key is already revoked');
+    }
+
+    // Revoke the key
+    apiKey.isRevoked = true;
+    await this.apiKeyRepository.save(apiKey);
+
+    return {
+      message: 'API key revoked successfully',
     };
   }
 

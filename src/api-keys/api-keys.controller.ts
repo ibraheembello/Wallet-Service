@@ -8,6 +8,7 @@ import {
 import { ApiKeysService } from './api-keys.service';
 import { CreateApiKeyDto } from './dto/create-api-key.dto';
 import { RolloverApiKeyDto } from './dto/rollover-api-key.dto';
+import { RevokeApiKeyDto } from './dto/revoke-api-key.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('API Keys')
@@ -52,5 +53,24 @@ export class ApiKeysController {
   @ApiResponse({ status: 404, description: 'API key not found' })
   async rolloverApiKey(@Req() req, @Body() rolloverDto: RolloverApiKeyDto) {
     return this.apiKeysService.rolloverApiKey(req.user.id, rolloverDto);
+  }
+
+  @Post('revoke')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Revoke an API key' })
+  @ApiResponse({
+    status: 200,
+    description: 'API key revoked successfully',
+    schema: {
+      properties: {
+        message: { type: 'string', example: 'API key revoked successfully' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'API key is already revoked' })
+  @ApiResponse({ status: 404, description: 'API key not found' })
+  async revokeApiKey(@Req() req, @Body() revokeDto: RevokeApiKeyDto) {
+    return this.apiKeysService.revokeApiKey(req.user.id, revokeDto);
   }
 }
